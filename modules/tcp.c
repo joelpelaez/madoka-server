@@ -18,7 +18,7 @@
 
 
 #ifdef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200809L
+# define _POSIX_C_SOURCE 200809L
 #endif
 
 #include <arpa/inet.h>
@@ -90,7 +90,7 @@ work_thread (void *args)
 	  strerror_r (errno, strerr, sizeof (strerr));
 	  syslog (LOG_WARNING, "tcp-module: Error in recv(): %s\n", strerr);
 	  close (newfd);
-          continue;
+	  continue;
 	}
 
       /* Check use madoka protocol */
@@ -101,7 +101,7 @@ work_thread (void *args)
 	  send (newfd, buf, strlen (buf), 0);
 	  shutdown (newfd, SHUT_RDWR);	/* Close properly */
 	  close (newfd);
-          continue;
+	  continue;
 	}
 
       /* Prepare binary and text mode */
@@ -111,24 +111,24 @@ work_thread (void *args)
       client.port = client_addr.sin_port;
 
       sprintf (cbuf, "TCP %s %d\n", inet_ntoa (client_addr.sin_addr),
-               ntohs (client_addr.sin_port)); 
+	       ntohs (client_addr.sin_port));
 
-      if (ret >= 13 && !strncmp ("BINARY", buf+7, 6))
-        ret = send (newfd, &client, sizeof (client), 0);
+      if (ret >= 13 && !strncmp ("BINARY", buf + 7, 6))
+	ret = send (newfd, &client, sizeof (client), 0);
 
-      else /* Normal (text) mode */
-        ret = send (newfd, cbuf, strlen (cbuf), 0);
+      else			/* Normal (text) mode */
+	ret = send (newfd, cbuf, strlen (cbuf), 0);
 
       if (ret < 0)
 	{
 	  strerror_r (errno, strerr, sizeof (strerr));
 	  syslog (LOG_WARNING, "Error in send(): %s\n", strerr);
-          shutdown (newfd, SHUT_RDWR);  /* Close properly */
+	  shutdown (newfd, SHUT_RDWR);	/* Close properly */
 	  close (newfd);
-          continue;
+	  continue;
 	}
 
-      shutdown (newfd, SHUT_RDWR);  /* Close properly */
+      shutdown (newfd, SHUT_RDWR);	/* Close properly */
       close (newfd);
     }
 
@@ -160,7 +160,7 @@ tcp_init (struct server *server_info)
       return -1;
     }
 
-  if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+  if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1)
     {
       syslog (LOG_ERR, "Error in setsockopt(): %s\n", strerror (errno));
       return -1;
@@ -224,7 +224,7 @@ struct protocol_module tcp_module = {
   .init = tcp_init,
   .exit = tcp_exit,
   .mode = MODE_THREADED,
-  .is_loaded = 0, /* set by main server thread */
+  .is_loaded = 0,		/* set by main server thread */
 };
 
 struct protocol_module *

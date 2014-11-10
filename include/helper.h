@@ -17,17 +17,17 @@
  */
 
 #if !defined (_HELPER_H_)
-#define _HELPER_H_
+# define _HELPER_H_
 
-#define MODE_SINGLE	0
-#define MODE_THREADED	1
-#define MODE_FORKED	2
+# define MODE_SINGLE	0
+# define MODE_THREADED	1
+# define MODE_FORKED	2
 
-#if defined (__cplusplus)
-#define EXTERN extern "C"
-#else
-#define EXTERN extern
-#endif
+# if defined (__cplusplus)
+#  define EXTERN extern "C"
+# else
+#  define EXTERN extern
+# endif
 
 /* Server information */
 struct server

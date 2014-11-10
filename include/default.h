@@ -2,8 +2,8 @@
 
 /* Default configure values */
 
-#define MADOKA_MODULE_PATH "./"
+# define MADOKA_MODULE_PATH "./"
 
-#define MADOKA_LOG_NAME "madoka"
+# define MADOKA_LOG_NAME "madoka"
 
 #endif

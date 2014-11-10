@@ -17,7 +17,7 @@
  */
 
 #if defined (_POSIX_C_SOURCE)
-#define _POSIX_C_SOURCE 200809L
+# define _POSIX_C_SOURCE 200809L
 #endif
 
 #include <errno.h>
@@ -36,9 +36,9 @@
 #include "modules.h"		/* Usable modules */
 
 #if defined (HAVE_CONFIG_H)
-#include "config.h"		/* autoconf values */
+# include "config.h"		/* autoconf values */
 #else
-#include "default.h"		/* default values */
+# include "default.h"		/* default values */
 #endif
 
 static int run_server;
@@ -65,7 +65,7 @@ quit_server (int mode, int code)
 }
 
 static void
-handler (int sig, siginfo_t * si, void *unused)
+handler (int sig, siginfo_t *si, void *unused)
 {
   syslog (LOG_NOTICE, "Terminate server with signal: %d", sig);
 
@@ -162,6 +162,8 @@ main (int argc, char **argv)
   /* Prepare server */
   openlog (MADOKA_LOG_NAME, LOG_PID, LOG_DAEMON);
   skeleton_daemon ();
+  syslog (LOG_NOTICE, "Start madoka-server with ip and port: %s:%d", argv[1],
+	  server_info.port_num);
 
   /* Check module list and alloc memory for this. */
   modules = malloc (sizeof (*modules) * modules_list_num);
@@ -225,6 +227,8 @@ main (int argc, char **argv)
 	}
 
       modules[i]->is_loaded = 1;
+      syslog (LOG_NOTICE, "Module %s loaded successfully",
+	      modules_list_name[i]);
 
       /* Set run_server if some module is loaded successfully */
       run_server = 1;

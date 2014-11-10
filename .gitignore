@@ -28,3 +28,8 @@ config.status
 libtool
 POTFILES
 *-POTFILES
+Makefile
+gen_module_list
+stamp-h1
+
+madoka-server
