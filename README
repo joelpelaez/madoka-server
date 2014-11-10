@@ -1,0 +1,17 @@
+Madoka NAT Transversal Jumper - Server executable
+----------------------------------------
+
+How is it?
+--------------------
+Madoka NAT Jumper is a simple NAT-transversal protocol designed for
+implement various internet protocols as TCP and UTP.
+
+Uses C language for server implementation and some dynamic modules.
+
+For build it use autotools.
+
+NOTE
+--------------------
+It has only been tested on Linux systems but the code may work in others POSIX
+compliant systems as OS X, Cygwin and BSD.
+

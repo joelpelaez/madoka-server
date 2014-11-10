@@ -1,0 +1,3 @@
+Madoka-NAT-Server 0.1b 2012-11-9 (development release)
+
+ * Initial version: server and tcp-module in fist beta version.

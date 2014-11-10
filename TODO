@@ -1,0 +1,5 @@
+ToDo:
+  * Implement UDP NAT-transversal module.
+  * Fix main server loop implementation.
+  * Add Madoka protocol documentation.
+  * Build module skeletons.
