@@ -224,6 +224,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GNUTLS_CFLAGS = @GNUTLS_CFLAGS@
+GNUTLS_LIBS = @GNUTLS_LIBS@
 GREP = @GREP@
 INCLTDL = @INCLTDL@
 INSTALL = @INSTALL@
@@ -267,6 +269,9 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
@@ -334,14 +339,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = $(LTDLINCL)
+AM_CPPFLAGS = -DDATADIR=\"$(datadir)/$(PACKAGE)\" $(LTDLINCL)
 AM_CFLAGS = -Wall -I$(top_srcdir)/include
 AM_LDFLAGS = 
 module_LTLIBRARIES = tcp-module.la
 tcp_module_la_SOURCES = tcp.c
-tcp_module_la_CFLAGS = ${AM_CFLAGS} ${PTHREAD_CFLAGS}
+tcp_module_la_CFLAGS = $(AM_CFLAGS) $(GNUTLS_CFLAGS) $(PTHREAD_CFLAGS)
 tcp_module_la_LDFLAGS = -no-undefined -module -avoid-version \
-			${AM_LDFLAGS} ${PTHREAD_LDFLAGS}
+			$(AM_LDFLAGS) $(GNUTLS_LIBS) $(PTHREAD_LDFLAGS)
 
 noinst_HEADERS = modules.h
 CLEANFILES = $(noinst_HEADERS)

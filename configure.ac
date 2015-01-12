@@ -28,7 +28,7 @@ AX_PTHREAD
 AC_SUBST([moduledir], ['$(libdir)/madoka/modules'])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h netdb.h stdint.h stdlib.h string.h sys/types.h sys/socket.h sys/stat.h syslog.h unistd.h], ,[
+AC_CHECK_HEADERS([arpa/inet.h netdb.h stdint.h stdlib.h string.h sys/types.h sys/select.h sys/socket.h sys/stat.h syslog.h unistd.h], ,[
 		AC_MSG_ERROR(You need a POSIX compliant system to compile madoka)])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -44,18 +44,39 @@ AC_DEFINE([MADOKA_LOG_NAME], ["madoka"],
 	[Define custom syslog indenity name])
 
 AC_ARG_WITH([custom-log-name],
-	AS_HELP_STRING([--with-custom-log-name=LOGNAME],
-	[define custom syslog identity name]))
+        AS_HELP_STRING([--with-custom-log-name=LOGNAME],
+        [define custom syslog identity name]))
 
 AS_IF([test "x$with_custom_log_name" != "xno" && test "x$with_custom_log_name" != "x"],
-	[
-	AS_IF([test "x$with_custom_log_name" == "xyes"],
-        	[
-		AC_MSG_WARN([--with-custom-log-name argument undefined: using default logging name])
-		 with_custom_log_name="madoka"
-		])
-	AC_DEFINE_UNQUOTED([MADOKA_LOG_NAME], ["$with_custom_log_name"])])
+        [
+        AS_IF([test "x$with_custom_log_name" == "xyes"],
+                [
+                AC_MSG_WARN([--with-custom-log-name argument undefined: using default logging name])
+                with_custom_log_name="madoka"
+                ])
+        AC_DEFINE_UNQUOTED([MADOKA_LOG_NAME], ["$with_custom_log_name"])])
 
+AC_ARG_ENABLE([gnutls],
+        AS_HELP_STRING([--enable-gnutls],
+        [compile modules with gnutls support]))
+
+AS_IF([test "x$enable_gnutls" == "xyes"],
+      [PKG_CHECK_MODULES([GNUTLS], [gnutls >= 2.11.7], [AC_DEFINE([HAVE_GNUTLS], [1],
+                         [Define if have installed gnutls to enable ssl support])])
+      ])
+
+AC_ARG_ENABLE([direct-tls],
+              AS_HELP_STRING([--enable-direct-tls], [force direct tls connections]))
+
+AS_IF([test "x$enable_direct_tls" == "xyes"],
+      [AS_IF([test "x$enable_gnutls" != "xyes"],
+             [AC_MSG_ERROR([--enable-direct-tls is only vaild with ---enable-gnutls])])
+        AC_DEFINE([DIRECT_TLS], [1],[Use direct tls sockets instance of STARTTLS command])
+])
+
+
+
+#PKG_CHECK_MODULES([GNUTLS], [gnutls >= 2.11.7], [AC_DEFINE([HAVE_GNUTLS], [1])])
 
 AC_CONFIG_FILES([Makefile scripts/Makefile modules/Makefile src/Makefile])
 

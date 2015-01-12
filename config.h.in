@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Use direct tls sockets instance of STARTTLS command */
+#undef DIRECT_TLS
+
 /* Define to 1 if you have the `argz_add' function. */
 #undef HAVE_ARGZ_ADD
 
@@ -61,6 +64,9 @@
 
 /* Define to 1 if the system has the type `error_t'. */
 #undef HAVE_ERROR_T
+
+/* Define if have installed gnutls to enable ssl support */
+#undef HAVE_GNUTLS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -143,6 +149,9 @@
 
 /* Define to 1 if you have the <sys/dl.h> header file. */
 #undef HAVE_SYS_DL_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #undef HAVE_SYS_SOCKET_H

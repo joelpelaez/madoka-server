@@ -47,6 +47,15 @@ struct client_addr
 /* Base types for module functions */
 typedef int (*init_func) (struct server * server);
 typedef void (*exit_func) (void);
+typedef int (*worker_func) (int);
+
+/* Thread table */
+struct thread_table_t
+{
+  pthread_t *thread;		/* Pthread ID */
+  int mode;			/* Thread state */
+  struct thread_table_t *next;	/* Next entry */
+};
 
 /* Protocol module */
 struct protocol_module
@@ -54,7 +63,9 @@ struct protocol_module
   char *name;			/* protocol name */
   init_func init;		/* init function */
   exit_func exit;		/* exit function */
-  unsigned int mode;		/* processing mode: single, thread, fork */
+  worker_func worker;           /* worker function */
+  int fd;			/* File descriptor to select */
+  struct thread_table_t *threads;	/* Threads working */
   unsigned int is_loaded;	/* 1 if load, 0 if not */
 };
 

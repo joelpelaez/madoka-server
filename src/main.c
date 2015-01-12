@@ -16,8 +16,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined (_POSIX_C_SOURCE)
-# define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L
+
+#if defined (HAVE_CONFIG_H)
+# include "config.h"		/* autoconf values */
+#else
+# include "default.h"		/* default values */
 #endif
 
 #include <errno.h>
@@ -28,18 +32,16 @@
 #include <string.h>
 #include <syslog.h>
 #include <sys/types.h>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ltdl.h>
+#if defined (HAVE_GNUTLS)
+# include <gnutls/gnutls.h>
+#endif
 
 #include "helper.h"
 #include "modules.h"		/* Usable modules */
-
-#if defined (HAVE_CONFIG_H)
-# include "config.h"		/* autoconf values */
-#else
-# include "default.h"		/* default values */
-#endif
 
 static int run_server;
 struct protocol_module **modules;
@@ -136,14 +138,17 @@ skeleton_daemon ()
 int
 main (int argc, char **argv)
 {
-  int i = 0;
-  int ret = 0;
+  int i = 0, ret = 0;
+  int maxfd = -1;
   char buf[256];
+  fd_set orig, fds;
   struct server server_info;
   struct protocol_module *(*load_func) (void) = NULL;
   lt_dlhandle module = NULL;
 
   memset (buf, 0, sizeof (buf));
+  FD_ZERO (&orig);
+  FD_ZERO (&fds);
 
   if (argc != 3)
     {
@@ -164,6 +169,11 @@ main (int argc, char **argv)
   skeleton_daemon ();
   syslog (LOG_NOTICE, "Start madoka-server with ip and port: %s:%d", argv[1],
 	  server_info.port_num);
+
+#if defined (HAVE_GNUTLS)
+  /* Enable SSL */
+  gnutls_global_init ();
+#endif
 
   /* Check module list and alloc memory for this. */
   modules = malloc (sizeof (*modules) * modules_list_num);
@@ -219,12 +229,18 @@ main (int argc, char **argv)
 
       ret = modules[i]->init (&server_info);
 
-      if (ret)
+      if (ret < 0)
 	{
 	  syslog (LOG_WARNING, "Error while executing module init function");
 	  modules[i]->is_loaded = 0;
 	  continue;		/* Invalid module and check next */
 	}
+
+      FD_SET (ret, &orig);
+      modules[i]->fd = ret;
+
+      if (maxfd < ret)
+	maxfd = ret;
 
       modules[i]->is_loaded = 1;
       syslog (LOG_NOTICE, "Module %s loaded successfully",
@@ -234,14 +250,26 @@ main (int argc, char **argv)
       run_server = 1;
     }
 
+  /* If we can't run server, exit it with code 1 */
+  if (!run_server)
+    quit_server (0, 1);
+
+  /* Prepare monitor socket */
   while (run_server)
     {
-      /* TODO: Use better wait method */
-      sleep (10);
+      fds = orig;
+
+      ret = select (maxfd + 1, &fds, NULL, NULL, NULL);
+
+      for (i = 0; (i < modules_list_num && ret > 0); i++)
+	if (FD_ISSET (modules[i]->fd, &fds))
+	  {
+	    modules[i]->worker (modules[i]->fd);
+	    ret--;
+	  }
     }
 
-  /* If we can't run server, exit it with code 1 */
-  quit_server (0, 1);
+  quit_server (0, 0);
 
   return 0;
 }
