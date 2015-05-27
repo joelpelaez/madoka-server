@@ -15,4 +15,4 @@ noinst_HEADERS = modules.h
 CLEANFILES = $(noinst_HEADERS)
 
 modules.h:	$(top_builddir)/scripts/gen_module_list
-	$< < $(srcdir)/modules.list > $@
+	$(top_builddir)/scripts/gen_module_list < $(srcdir)/modules.list > $@
